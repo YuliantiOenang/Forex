@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Seeker CapitalTest</string>
+    <string name="title_search">Search</string>
+    <string name="title_markets">Markets</string>
+    <string name="equity">Equity</string>
+    <string name="balance">Balance</string>
+    <string name="margin">Margin</string>
+    <string name="used">Used</string>
+    <string name="symbol">Symbol</string>
+    <string name="change">Change</string>
+    <string name="sell">Sell</string>
+    <string name="buy">Buy</string>
+    <string name="money">$%.2f</string>
+    <string name="change_format">%.2f\%%</string>
+    <string name="title_portfolio">Portfolio</string>
+    <string name="title_user">User</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="waiting">Waiting…</string>
+    <string name="dash">-</string>
+</resources>
