@@ -53,7 +53,7 @@ android {
         }
         debug {
             buildConfigField "String", "BASE_API_URL", "\"https://api.apilayer.com/currency_data/\""
-            debuggable false
+            debuggable true
         }
     }
     compileOptions {
