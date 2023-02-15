@@ -7,16 +7,16 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.seekercapitaltest.presentation.market.MarketFragment"
+        android:name="com.example.forex.presentation.market.MarketFragment"
         tools:layout="@layout/fragment_markets" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.seekercapitaltest.presentation.dashboard.DashboardFragment"
+        android:name="com.example.forex.presentation.dashboard.DashboardFragment"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.seekercapitaltest.presentation.notifications.NotificationsFragment"
+        android:name="com.example.forex.presentation.notifications.NotificationsFragment"
         tools:layout="@layout/fragment_notifications" />
 </navigation>

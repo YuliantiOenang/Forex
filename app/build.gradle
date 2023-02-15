@@ -8,16 +8,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.dagger.hilt.android'
 
 android {
-    dataBinding {
-        enabled = true
-    }
     signingConfigs {
         mock {
         }
         release {
         }
     }
-    namespace 'com.example.seekercapitaltest'
+    namespace 'com.example.forex'
     compileSdk 32
 
     externalNativeBuild {
@@ -28,7 +25,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.seekercapitaltest"
+        applicationId "com.example.forex"
         minSdk 21
         targetSdk 32
         versionCode 1
