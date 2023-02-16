@@ -4,14 +4,26 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.*
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.forex.common.Resource
 import com.example.forex.common.Util.Companion.formatCurrency
 import com.example.forex.databinding.FragmentMarketsBinding
 import com.example.forex.domain.repository.model.Instrument
+import com.example.forex.domain.repository.model.Market
 import com.example.forex.presentation.common.DialogLoading
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class MarketFragment : Fragment() {
     private var _binding: FragmentMarketsBinding? = null
@@ -29,6 +41,9 @@ class MarketFragment : Fragment() {
             handler.postDelayed(this, 5000)
         }
     }
+
+    lateinit var equity: State<MarketState>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +67,17 @@ class MarketFragment : Fragment() {
         }
         viewModel.isLoadData.observe(viewLifecycleOwner, isLoading)
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.equityState.collectLatest {
+                    if (it is MarketState.Success) {
+                        binding.txtEquityValue.text = formatCurrency(it.market.data?.account?.equity ?: 0.0f)
+                    }
+
+                }
+            }
+        }
+
         val error = Observer<String> { instruments ->
             Toast.makeText(requireContext(), instruments, Toast.LENGTH_LONG).show()
         }
@@ -62,10 +88,11 @@ class MarketFragment : Fragment() {
         }
         viewModel.instrumentLiveData.observe(viewLifecycleOwner, instrumentData)
 
-        val equityData = Observer<Float> { instruments ->
-            binding.txtEquityValue.text = formatCurrency(instruments)
-        }
-        viewModel.equityLiveData.observe(viewLifecycleOwner, equityData)
+//        if (equity.value is MarketState.Success) {
+//            binding.txtEquityValue.text = formatCurrency((equity as MarketState.Success).market.data!!.account.equity)
+//        }
+
+
         val balanceData = Observer<Float> { instruments ->
             binding.txtBalanceValue.text = formatCurrency(instruments)
         }
@@ -120,4 +147,21 @@ class MarketFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+}
+
+sealed interface MarketState {
+    /**
+     * The feed is still loading.
+     */
+    object Loading : MarketState
+
+    /**
+     * The feed is loaded with the given list of news resources.
+     */
+    data class Success(
+        /**
+         * The list of news resources contained in this feed.
+         */
+        val market: Resource<Market>,
+    ) : MarketState
 }

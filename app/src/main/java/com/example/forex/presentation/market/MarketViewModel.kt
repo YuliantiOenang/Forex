@@ -9,10 +9,10 @@ import com.example.forex.common.Resource
 import com.example.forex.domain.usecase.DeleteDbUseCase
 import com.example.forex.domain.usecase.GetMarketListUseCase
 import com.example.forex.domain.repository.model.Instrument
+import com.example.forex.domain.repository.model.Market
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,7 +20,14 @@ class MarketViewModel @Inject constructor(
     private val getMarketListUseCase: GetMarketListUseCase,
     private val deleteDbUseCase: DeleteDbUseCase
 ) : ViewModel() {
-    var equityLiveData: MutableLiveData<Float> = MutableLiveData<Float>()
+    val equityState: StateFlow<MarketState> = getMarketListUseCase("IDR", "")
+        .filterNot { it.data?.listMarket?.isEmpty() ?: false }
+        .map(MarketState::Success)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = MarketState.Loading,
+        )
     var balanceLiveData: MutableLiveData<Float> = MutableLiveData<Float>()
     var marginLiveData: MutableLiveData<Float> = MutableLiveData<Float>()
     var usedLiveData: MutableLiveData<Float> = MutableLiveData<Float>()
@@ -35,6 +42,7 @@ class MarketViewModel @Inject constructor(
 
     fun initializeData() {
         if (deleteJob?.isActive != true) {
+
             job = getMarketListUseCase("IDR","").onEach { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -44,7 +52,6 @@ class MarketViewModel @Inject constructor(
                             market = result.data!!
                         )
                         instrumentLiveData.postValue(_state.value.market.listMarket)
-                        equityLiveData.postValue(_state.value.market.account.equity)
                         balanceLiveData.postValue(_state.value.market.account.balance)
                         marginLiveData.postValue(_state.value.market.account.margin)
                         usedLiveData.postValue(_state.value.market.account.used)
