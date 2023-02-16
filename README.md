@@ -1,4 +1,4 @@
-# SeekerCapitalApp
+# Forex App
 
 This is the MVVM architecture that I made for this project.
 
