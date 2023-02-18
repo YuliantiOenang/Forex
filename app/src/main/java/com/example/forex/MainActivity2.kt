@@ -1,5 +1,6 @@
 package com.example.forex
 
+import android.graphics.Paint.Align
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,7 +18,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import com.example.forex.presentation.ui.TrialAndroidComposeTheme
@@ -30,54 +34,60 @@ class MainActivity2 : ComponentActivity() {
                 var count by remember {
                     mutableStateOf(0)
                 }
-                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colors.background
-//                ) {
-                //ONCLICK LISTENER!
-//                Column(
-//                    verticalArrangement = Arrangement.Center,
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                    modifier = Modifier.fillMaxSize()
-//                ) {
-//                    Text(
-//                        text = count.toString(),
-//                        fontSize = 30.sp
-//                    )
-//                    Button(onClick = { count++ }) {
-//                        Text(text = "Click Me!")
-//                    }
-//                }
-                var name by remember{
-                    mutableStateOf("")
-                }
-                var names by remember{
-                    mutableStateOf(listOf<String>() )
-                }
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)) {
-
-                    Row(Modifier.fillMaxWidth()) {
-                        OutlinedTextField(value = name, onValueChange = {text -> name = text},
-                            modifier = Modifier.weight(1f))
-                        Spacer(modifier=Modifier.width(16.dp))
-                        Button(onClick = { if (name.isNotBlank()) {
-                            names = names + name
-                            name = ""
-                        } }) {
-                            Text(text = "Add")
-                        }
-                    }
-                    nameList(names)
-                }
-
-                //Greeting("Yuli")
-//                }
+                Account(1.0f, 2.0f, 3.0f, 4.0f)
             }
         }
     }
+}
+
+@Composable
+fun Account(equity: Float, balance: Float, margin: Float, used: Float) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("App title") },
+                actions = {
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        IconButton(
+                            onClick = { /* TODO: Open search */ }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
+            )
+        }, content = { padding ->
+            Row(modifier = Modifier.padding(padding)) {
+                Column {
+                    Text(
+                        text = equity.toString(),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Text(
+                        text = balance.toString(),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column {
+                    Text(
+                        text = margin.toString(),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Text(
+                        text = used.toString(),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
+            }
+        }
+    )
 }
 
 @Composable
@@ -175,7 +185,7 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     TrialAndroidComposeTheme {
-        Greeting("Android")
+        Account(1.0f, 2.0f, 3.0f, 4.0f)
     }
 }
 
