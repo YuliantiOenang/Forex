@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
+import com.example.forex.domain.repository.model.Market
 import com.example.forex.presentation.ui.TrialAndroidComposeTheme
 
 class MainActivity2 : ComponentActivity() {
@@ -38,6 +39,11 @@ class MainActivity2 : ComponentActivity() {
             }
         }
     }
+}
+
+@Composable
+fun Table(markets: List<Market>) {
+
 }
 
 @Composable
@@ -60,31 +66,87 @@ fun Account(equity: Float, balance: Float, margin: Float, used: Float) {
                 }
             )
         }, content = { padding ->
-            Row(modifier = Modifier.padding(padding)) {
-                Column {
-                    Text(
-                        text = equity.toString(),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+            Box(modifier = Modifier.height(IntrinsicSize.Min).padding(2.dp)) {
+                Row(
+                    modifier = Modifier.padding(8.dp).wrapContentHeight(Alignment.Top, false)
+                        .background(Color.Green)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(8.dp)
+                    ) {
+                        Row {
+                            Text(
+                                text = "Equity",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                            Text(
+                                text = equity.toString(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                        }
+                        Row {
+                            Text(
+                                text = "Balance",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                            Text(
+                                text = balance.toString(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                        }
+                    }
+                    Divider(
+                        color = Color.Black, modifier = Modifier.width(1.dp).fillMaxHeight()
                     )
-                    Text(
-                        text = balance.toString(),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(8.dp)
+                    ) {
+                        Row {
+                            Text(
+                                text = "Margin",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                            Text(
+                                text = margin.toString(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                        }
+                        Row {
+                            Text(
+                                text = "Used",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                            Text(
+                                text = used.toString(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                            )
+                        }
+                    }
+
                 }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column {
-                    Text(
-                        text = margin.toString(),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                    Text(
-                        text = used.toString(),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
-
             }
         }
     )
@@ -194,8 +256,7 @@ fun nameList(
     names: List<String>
 ) {
     LazyColumn {
-        items(names) {
-                currentName ->
+        items(names) { currentName ->
             Text(
                 text = currentName,
                 modifier = Modifier
