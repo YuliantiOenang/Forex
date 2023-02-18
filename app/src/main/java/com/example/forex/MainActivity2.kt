@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
+import com.example.forex.domain.repository.model.Instrument
 import com.example.forex.domain.repository.model.Market
 import com.example.forex.presentation.ui.TrialAndroidComposeTheme
 
@@ -32,124 +33,178 @@ class MainActivity2 : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TrialAndroidComposeTheme {
-                var count by remember {
-                    mutableStateOf(0)
-                }
-                Account(1.0f, 2.0f, 3.0f, 4.0f)
+                Scaffold(
+                    topBar = {
+                        TopBar()
+                    }, content = { paddingValue ->
+                        Column() {
+                            Account(
+                                equity = 1f,
+                                balance = 2f,
+                                margin = 3f,
+                                used = 4f
+                            )
+                            Table(Market(com.example.forex.domain.repository.model.Account(1f, 2f,3f,4f), listOf(
+                                Instrument("ABC", 1f, 2f, 3f, 4f)
+                            )))
+                        }
+
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun Table(markets: List<Market>) {
+fun Table(markets: Market) {
+    Row(horizontalArrangement = Arrangement.Center) {
+        Text(
+            text = "Symbol",
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "Change",
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "Sell",
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "Buy",
+            modifier = Modifier.weight(1f)
+        )
+    }
+    Divider(
+        thickness = 1.dp, modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Black)
+    )
+    LazyColumn {
+        items(markets.listMarket) { market ->
+            Row {
+                Text(market.symbol, Modifier.weight(1f))
+                Text(market.change.toString(), Modifier.weight(1f))
+                Text(market.sell.toString(), Modifier.weight(1f))
+                Text(market.buy.toString(), Modifier.weight(1f))
+            }
+        }
+    }
 
 }
 
 @Composable
-fun Account(equity: Float, balance: Float, margin: Float, used: Float) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("App title") },
-                actions = {
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        IconButton(
-                            onClick = { /* TODO: Open search */ }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Search,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                }
-            )
-        }, content = { padding ->
-            Box(modifier = Modifier.height(IntrinsicSize.Min).padding(2.dp)) {
-                Row(
-                    modifier = Modifier.padding(8.dp).wrapContentHeight(Alignment.Top, false)
-                        .background(Color.Green)
+fun TopBar() {
+    TopAppBar(
+        title = { Text("App title") },
+        actions = {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                IconButton(
+                    onClick = { /* TODO: Open search */ }
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(8.dp)
-                    ) {
-                        Row {
-                            Text(
-                                text = "Equity",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                            Text(
-                                text = equity.toString(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                        }
-                        Row {
-                            Text(
-                                text = "Balance",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                            Text(
-                                text = balance.toString(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                        }
-                    }
-                    Divider(
-                        color = Color.Black, modifier = Modifier.width(1.dp).fillMaxHeight()
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = null
                     )
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(8.dp)
-                    ) {
-                        Row {
-                            Text(
-                                text = "Margin",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                            Text(
-                                text = margin.toString(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                        }
-                        Row {
-                            Text(
-                                text = "Used",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                            Text(
-                                text = used.toString(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                        }
-                    }
-
                 }
             }
         }
     )
+}
+
+@Composable
+fun Account(equity: Float, balance: Float, margin: Float, used: Float) {
+    Box(
+        modifier = Modifier
+            .height(IntrinsicSize.Min)
+            .padding(2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .wrapContentHeight(Alignment.Top, false)
+                .background(Color.Green)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(8.dp)
+            ) {
+                Row {
+                    Text(
+                        text = "Equity",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    Text(
+                        text = equity.toString(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                }
+                Row {
+                    Text(
+                        text = "Balance",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    Text(
+                        text = balance.toString(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                }
+            }
+            Divider(
+                color = Color.Black, modifier = Modifier
+                    .width(1.dp)
+                    .fillMaxHeight()
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(8.dp)
+            ) {
+                Row {
+                    Text(
+                        text = "Margin",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    Text(
+                        text = margin.toString(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                }
+                Row {
+                    Text(
+                        text = "Used",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    Text(
+                        text = used.toString(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                }
+            }
+
+        }
+    }
 }
 
 @Composable
