@@ -58,23 +58,36 @@ class MainActivity2 : ComponentActivity() {
 
 @Composable
 fun Table(markets: Market) {
-    Row(horizontalArrangement = Arrangement.Center) {
-        Text(
-            text = "Symbol",
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "Change",
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "Sell",
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "Buy",
-            modifier = Modifier.weight(1f)
-        )
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Symbol",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Change",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Sell",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Buy",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
     }
     Divider(
         thickness = 1.dp, modifier = Modifier
@@ -84,10 +97,34 @@ fun Table(markets: Market) {
     LazyColumn {
         items(markets.listMarket) { market ->
             Row {
-                Text(market.symbol, Modifier.weight(1f))
-                Text(market.change.toString(), Modifier.weight(1f))
-                Text(market.sell.toString(), Modifier.weight(1f))
-                Text(market.buy.toString(), Modifier.weight(1f))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = market.symbol,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = market.change.toString(),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = market.sell.toString(),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = market.buy.toString(),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
             }
         }
     }
