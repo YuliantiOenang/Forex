@@ -27,12 +27,20 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.forex.common.Util
 import com.example.forex.domain.repository.model.Instrument
 import com.example.forex.domain.repository.model.Market
+import com.example.forex.presentation.market.MarketState
 import com.example.forex.presentation.market.MarketViewModel
 import com.example.forex.presentation.ui.TrialAndroidComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
-
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity2 : ComponentActivity() {
     private val viewModel: MarketViewModel by viewModels()
@@ -60,18 +68,7 @@ class MainActivity2 : ComponentActivity() {
                                 margin = 3f,
                                 used = 4f
                             )
-                            Table(
-                                Market(
-                                    com.example.forex.domain.repository.model.Account(
-                                        1f,
-                                        2f,
-                                        3f,
-                                        4f
-                                    ), listOf(
-                                        Instrument("ABC", 1f, 2f, 3f, 4f)
-                                    )
-                                )
-                            )
+                            Table(viewModel.equityState)
                         }
 
                     }
@@ -92,7 +89,8 @@ class MainActivity2 : ComponentActivity() {
     }
 
     @Composable
-    fun Table(markets: Market) {
+    fun Table(markets: StateFlow<MarketState>) {
+        val marketUiState by viewModel.equityState.collectAsStateWithLifecycle()
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -130,37 +128,43 @@ class MainActivity2 : ComponentActivity() {
                 .background(Color.Black)
         )
         LazyColumn {
-            items(markets.listMarket) { market ->
-                Row {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = market.symbol,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                        )
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = market.change.toString(),
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                        )
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = market.sell.toString(),
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                        )
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = market.buy.toString(),
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                        )
+            when (marketUiState) {
+                is MarketState.Success -> {
+                    items((marketUiState as MarketState.Success).market.data?.listMarket ?: listOf()) { market ->
+                        Row {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = market.symbol,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = market.change.toString(),
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = market.sell.toString(),
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = market.buy.toString(),
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                        }
                     }
                 }
+
+                else -> {}
             }
         }
 
