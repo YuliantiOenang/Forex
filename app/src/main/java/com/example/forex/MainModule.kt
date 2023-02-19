@@ -13,4 +13,9 @@ object MainModule {
     fun provideActivity(activity: Activity): MainActivity {
         return activity as MainActivity
     }
+
+    @Provides
+    fun provideMainActivity2(activity: Activity): MainActivity2 {
+        return activity as MainActivity2
+    }
 }

@@ -2,8 +2,10 @@ package com.example.forex
 
 import android.graphics.Paint.Align
 import android.os.Bundle
+import android.os.Handler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Alignment
@@ -24,13 +26,27 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
+import androidx.fragment.app.activityViewModels
 import com.example.forex.domain.repository.model.Instrument
 import com.example.forex.domain.repository.model.Market
+import com.example.forex.presentation.market.MarketViewModel
 import com.example.forex.presentation.ui.TrialAndroidComposeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity2 : ComponentActivity() {
+    private val viewModel: MarketViewModel by viewModels()
+    private val handler = Handler()
+    private val refresh: Runnable = object : Runnable {
+        override fun run() {
+            viewModel.initializeData()
+            handler.postDelayed(this, 5000)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handler.postDelayed(refresh, 5000)
         setContent {
             TrialAndroidComposeTheme {
                 Scaffold(
@@ -44,9 +60,18 @@ class MainActivity2 : ComponentActivity() {
                                 margin = 3f,
                                 used = 4f
                             )
-                            Table(Market(com.example.forex.domain.repository.model.Account(1f, 2f,3f,4f), listOf(
-                                Instrument("ABC", 1f, 2f, 3f, 4f)
-                            )))
+                            Table(
+                                Market(
+                                    com.example.forex.domain.repository.model.Account(
+                                        1f,
+                                        2f,
+                                        3f,
+                                        4f
+                                    ), listOf(
+                                        Instrument("ABC", 1f, 2f, 3f, 4f)
+                                    )
+                                )
+                            )
                         }
 
                     }
@@ -54,198 +79,208 @@ class MainActivity2 : ComponentActivity() {
             }
         }
     }
-}
 
-@Composable
-fun Table(markets: Market) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "Symbol",
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "Change",
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "Sell",
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "Buy",
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(refresh)
     }
-    Divider(
-        thickness = 1.dp, modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Black)
-    )
-    LazyColumn {
-        items(markets.listMarket) { market ->
-            Row {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = market.symbol,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                    )
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = market.change.toString(),
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                    )
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = market.sell.toString(),
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                    )
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = market.buy.toString(),
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                    )
+
+    override fun onDestroy() {
+        handler.removeCallbacks(refresh)
+        viewModel.cancelJob()
+        super.onDestroy()
+    }
+
+    @Composable
+    fun Table(markets: Market) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Symbol",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Change",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Sell",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Buy",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+        }
+        Divider(
+            thickness = 1.dp, modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+        )
+        LazyColumn {
+            items(markets.listMarket) { market ->
+                Row {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = market.symbol,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = market.change.toString(),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = market.sell.toString(),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = market.buy.toString(),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
             }
         }
+
     }
 
-}
-
-@Composable
-fun TopBar() {
-    TopAppBar(
-        title = { Text("App title") },
-        actions = {
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                IconButton(
-                    onClick = { /* TODO: Open search */ }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null
-                    )
+    @Composable
+    fun TopBar() {
+        TopAppBar(
+            title = { Text("App title") },
+            actions = {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    IconButton(
+                        onClick = { /* TODO: Open search */ }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
-        }
-    )
-}
+        )
+    }
 
-@Composable
-fun Account(equity: Float, balance: Float, margin: Float, used: Float) {
-    Box(
-        modifier = Modifier
-            .height(IntrinsicSize.Min)
-            .padding(2.dp)
-    ) {
-        Row(
+    @Composable
+    fun Account(equity: Float, balance: Float, margin: Float, used: Float) {
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .wrapContentHeight(Alignment.Top, false)
-                .background(Color.Green)
+                .height(IntrinsicSize.Min)
+                .padding(2.dp)
         ) {
-            Column(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
                     .padding(8.dp)
+                    .wrapContentHeight(Alignment.Top, false)
+                    .background(Color.Green)
             ) {
-                Row {
-                    Text(
-                        text = "Equity",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    Text(
-                        text = equity.toString(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(8.dp)
+                ) {
+                    Row {
+                        Text(
+                            text = "Equity",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                        Text(
+                            text = equity.toString(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "Balance",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                        Text(
+                            text = balance.toString(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                    }
                 }
-                Row {
-                    Text(
-                        text = "Balance",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    Text(
-                        text = balance.toString(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                }
-            }
-            Divider(
-                color = Color.Black, modifier = Modifier
-                    .width(1.dp)
-                    .fillMaxHeight()
-            )
+                Divider(
+                    color = Color.Black, modifier = Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(8.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Margin",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    Text(
-                        text = margin.toString(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(8.dp)
+                ) {
+                    Row {
+                        Text(
+                            text = "Margin",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                        Text(
+                            text = margin.toString(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "Used",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                        Text(
+                            text = used.toString(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                    }
                 }
-                Row {
-                    Text(
-                        text = "Used",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    Text(
-                        text = used.toString(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                }
-            }
 
+            }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String) {
+    @Composable
+    fun Greeting(name: String) {
 
 
 //    LazyRow {
@@ -333,29 +368,30 @@ fun Greeting(name: String) {
 //        Text(text = "Other text ")
 //    }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TrialAndroidComposeTheme {
-        Account(1.0f, 2.0f, 3.0f, 4.0f)
     }
-}
 
-@Composable
-fun nameList(
-    names: List<String>
-) {
-    LazyColumn {
-        items(names) { currentName ->
-            Text(
-                text = currentName,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            )
-            Divider()
+    @Preview(showBackground = true)
+    @Composable
+    fun DefaultPreview() {
+        TrialAndroidComposeTheme {
+            Account(1.0f, 2.0f, 3.0f, 4.0f)
+        }
+    }
+
+    @Composable
+    fun nameList(
+        names: List<String>
+    ) {
+        LazyColumn {
+            items(names) { currentName ->
+                Text(
+                    text = currentName,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                )
+                Divider()
+            }
         }
     }
 }
