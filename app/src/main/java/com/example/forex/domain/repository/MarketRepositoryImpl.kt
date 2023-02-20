@@ -2,6 +2,9 @@ package com.example.forex.domain.repository
 
 import com.example.forex.BuildConfig
 import com.example.forex.common.Util.Companion.roundOffDecimal
+import com.example.forex.core.Synchronizer
+import com.example.forex.core.changeListSync
+import com.example.forex.core.datastore.ChangeListVersions
 import com.example.forex.data.database.dao.InstrumentDao
 import com.example.forex.data.database.dao.InstrumentSymbolDao
 import com.example.forex.data.database.entity.InstrumentEntity
@@ -92,6 +95,73 @@ class MarketRepositoryImpl @Inject constructor(
             instrumentSymbolDao.deleteAll()
         }
     }
+
+    override suspend fun syncWith(synchronizer: Synchronizer) =
+        synchronizer.changeListSync(
+            versionReader = ChangeListVersions::marketVersion,
+            changeListFetcher = {currentVersion ->
+                networkDataSource.getMarketChangeList(currentVersion)
+            },
+            versionUpdater = {latestVersion ->
+                copy(latestVersion)
+            },
+            modelDeleter = {
+                dao.deleteAll()
+                instrumentSymbolDao.deleteAll()
+            },
+            modelUpdater = { changeIds ->
+                val networkMarketListResources = networkDataSource.getInstrumentList()
+                val networkMarketResources = networkDataSource.getInstrumentLive("USD", "AUD")
+                if (networkMarketResources.quotes != null) {
+                    networkMarketResources.quotes.map { entry ->
+                        val db = dao.getAll()
+                        val random1: Float = Random().nextInt(10) - 10 / 10.0f
+                        val random2: Float = Random().nextInt(10) - 10 / 10.0f
+                        val random3: Float = Random().nextInt(10) - 10 / 10.0f
+                        val sell = roundOffDecimal(entry.value + random1)
+                        val buy = roundOffDecimal(entry.value + random2)
+
+                        val initialPrice: Float
+                        val currentPrice: Float
+
+                        val dbItem = db.find { entry.key == it.symbol }
+                        // first launch the app
+                        if (dbItem == null) {
+                            initialPrice = roundOffDecimal(entry.value)
+                            currentPrice = initialPrice
+                            dao.insert(
+                                InstrumentEntity(
+                                    entry.key,
+                                    initialPrice,
+                                    sell,
+                                    buy
+                                )
+                            )
+                        } else {
+                            initialPrice = roundOffDecimal(dbItem.original_price)
+                            currentPrice = if (BuildConfig.DEBUG) {
+                                roundOffDecimal(entry.value + random3)
+                            } else {
+                                entry.value
+                            }
+                        }
+
+                        Instrument(
+                            entry.key,
+                            initialPrice,
+                            roundOffDecimal(currentPrice - initialPrice),
+                            sell,
+                            buy
+                        )
+                    }
+
+                    instrumentSymbolDao.insertAll(networkMarketListResources.currencies?.map {
+                        return@map InstrumentSymbolEntity(it.key)
+                    } ?: listOf())
+
+                }
+            }
+        )
 
     override suspend fun getInstrumentList(): List<InstrumentCode> {
         return withContext(Dispatchers.IO) {
