@@ -17,7 +17,7 @@ open class GetMarketListUseCase @Inject constructor(
     operator fun invoke(from: String, to: String?): Flow<Resource<Market>> = flow {
         while (true) {
             try {
-                emit(Resource.Loading())
+//                emit(Resource.Loading())
                 val stringTo = if (to.isNullOrEmpty()) {
                     val toCode = repository.getInstrumentList()
                     val toString = mutableListOf<String>()

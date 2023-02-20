@@ -22,16 +22,18 @@ class MarketViewModel @Inject constructor(
 ) : ViewModel() {
     val equityState: StateFlow<MarketState> = getMarketListUseCase("IDR", "")
         .filterNot { it.data?.listMarket?.isEmpty() ?: false }
-        .map(MarketState::Success)
+        .map<Resource<Market>, MarketState>{
+            if (it is Resource.Loading) {
+                MarketState.Loading
+            } else {
+                MarketState.Success(it)
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = MarketState.Loading,
         )
-    var balanceLiveData: MutableLiveData<Float> = MutableLiveData<Float>()
-    var marginLiveData: MutableLiveData<Float> = MutableLiveData<Float>()
-    var usedLiveData: MutableLiveData<Float> = MutableLiveData<Float>()
-    var instrumentLiveData: MutableLiveData<List<Instrument>> = MutableLiveData<List<Instrument>>()
     var isLoadData: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
     var error: MutableLiveData<String> = MutableLiveData<String>()
     private var job: Job? = null
@@ -39,37 +41,6 @@ class MarketViewModel @Inject constructor(
 
     private val _state = mutableStateOf(MarketListState())
     val state: State<MarketListState> = _state
-
-    fun initializeData() {
-        if (deleteJob?.isActive != true) {
-
-            job = getMarketListUseCase("IDR","").onEach { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _state.value = MarketListState(isLoading = false)
-                        isLoadData.postValue(_state.value.isLoading)
-                        _state.value = MarketListState(
-                            market = result.data!!
-                        )
-                        instrumentLiveData.postValue(_state.value.market.listMarket)
-                        balanceLiveData.postValue(_state.value.market.account.balance)
-                        marginLiveData.postValue(_state.value.market.account.margin)
-                        usedLiveData.postValue(_state.value.market.account.used)
-                    }
-                    is Resource.Error -> {
-                        _state.value = MarketListState(
-                            error = result.message ?: "An unexpected error occured"
-                        )
-                        error.postValue(_state.value.error)
-                    }
-                    is Resource.Loading -> {
-                        _state.value = MarketListState(isLoading = true)
-                        isLoadData.postValue(_state.value.isLoading)
-                    }
-                }
-            }.launchIn(viewModelScope)
-        }
-    }
 
     fun deleteDb() {
         deleteJob = deleteDbUseCase().onEach { result ->

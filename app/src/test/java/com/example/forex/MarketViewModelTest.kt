@@ -5,10 +5,6 @@ import com.example.forex.common.Resource
 import com.example.forex.domain.usecase.DeleteDbUseCase
 import com.example.forex.domain.usecase.GetMarketListUseCase
 import com.example.forex.domain.repository.MarketRepository
-import com.example.forex.domain.repository.model.Account
-import com.example.forex.domain.repository.model.Instrument
-import com.example.forex.domain.repository.model.InstrumentCode
-import com.example.forex.domain.repository.model.Market
 import com.example.forex.presentation.market.MarketViewModel
 import io.mockk.*
 import junit.framework.TestCase.*
@@ -53,66 +49,6 @@ class MarketViewModelTest {
         clearAllMocks()
         Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
         mainThreadSurrogate.close()
-    }
-
-    @Test
-    fun `Initialize market list should return market price list`() = runTest {
-        val live = mutableListOf(Instrument("USD", 1.0f, 2.0f, 3.0f, 4.0f))
-        coEvery { marketRepository.getInstrumentList() } returns mutableListOf(InstrumentCode("USD"))
-        coEvery { marketRepository.getInstrumentLive(any(), any()) } returns live
-        val account = Account(1.0f, 2.0f, 3.0f, 4.0f)
-        coEvery { marketRepository.getAccount(any()) } returns account
-
-        every {
-            getMarketListUseCase.invoke(
-                any(),
-                any()
-            )
-        } returns flow {
-            emit(Resource.Loading())
-            val toCode = marketRepository.getInstrumentList()
-            val stringTo = toCode.joinToString(", ")
-            val instrumentList = marketRepository.getInstrumentLive("USD", stringTo)
-            val account = marketRepository.getAccount(instrumentList)
-            emit(Resource.Success(Market(account, instrumentList)))
-        }
-
-        val job = launch {
-            viewModel.initializeData()
-        }
-        advanceTimeBy(10000)
-
-        verify {
-            getMarketListUseCase.invoke(any(), any())
-        }
-        assertEquals(viewModel.state.value.isLoading, false)
-        assertEquals(viewModel.state.value.market.account, account)
-        assertEquals(viewModel.state.value.market.listMarket, live)
-        job.cancel()
-    }
-
-    @Test
-    fun `Initialise data error will return error message`() = runTest {
-        every {
-            getMarketListUseCase.invoke(
-                any(),
-                any()
-            )
-        } returns flow {
-            emit(Resource.Error("error"))
-        }
-
-        val job = launch {
-            viewModel.initializeData()
-        }
-        advanceTimeBy(10000)
-
-        verify {
-            getMarketListUseCase.invoke(any(), any())
-        }
-        assertEquals(viewModel.state.value.error, "error")
-
-        job.cancel()
     }
 
     @Test
