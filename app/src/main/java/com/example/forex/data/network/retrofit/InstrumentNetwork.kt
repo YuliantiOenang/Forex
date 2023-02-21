@@ -1,6 +1,7 @@
 package com.example.forex.data.network.retrofit
 
 import com.example.forex.BuildConfig
+import com.example.forex.core.network.model.NetworkChangeList
 import com.example.forex.data.network.InstrumentDataSource
 import com.example.forex.data.network.model.InstrumentLiveDto
 import com.example.forex.data.network.model.InstrumentListDto
@@ -68,5 +69,9 @@ class InstrumentNetwork @Inject constructor(): InstrumentDataSource {
 
     override suspend fun getInstrumentList(): InstrumentListDto {
         return networkApi.getInstrumentList()
+    }
+
+    override suspend fun getMarketChangeList(after: Int?): List<NetworkChangeList> {
+        TODO("Not yet implemented")
     }
 }

@@ -3,6 +3,7 @@ package com.example.forex.data.sharedpreferences
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.forex.core.datastore.ChangeListVersions
 import com.example.forex.data.sharedpreferences.LocalDataStoreConstant.SHARED_PREFERENCE_TAG
 import javax.inject.Inject
 
@@ -22,6 +23,14 @@ class SeekerCapitalTestLocalDataStore @Inject constructor(context: Application):
 
     override fun readFloat(key: String): Float {
         return sharedPreferences.getFloat(key, 0.0f)
+    }
+
+    override fun getChangeListVersions(): ChangeListVersions {
+        return ChangeListVersions(1)
+    }
+
+    override fun updateChangeListVersion(update: ChangeListVersions.() -> ChangeListVersions) {
+
     }
 
     override fun clear() {
