@@ -44,7 +44,7 @@ android {
         }
 
         mock {
-            buildConfigField "String", "BASE_API_URL", "\"https://dcf8d910-dfc4-451d-8787-7acede2d481e.mock.pstmn.io\""
+            buildConfigField "String", "BASE_API_URL", "\"https://83b5e708-239b-4af9-806a-f3d020139345.mock.pstmn.io\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             debuggable true

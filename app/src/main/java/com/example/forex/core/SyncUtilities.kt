@@ -32,20 +32,23 @@ suspend fun Synchronizer.changeListSync(
     versionReader: (ChangeListVersions) -> Int,
     changeListFetcher: suspend (Int) -> List<NetworkChangeList>,
     versionUpdater: ChangeListVersions.(Int) -> ChangeListVersions,
-    modelDeleter: suspend (List<String>) -> Unit,
-    modelUpdater: suspend (List<String>) -> Unit
+    modelDeleter: suspend () -> Unit,
+    modelUpdater: suspend () -> Unit
 ) = suspendRunCaching {
     val currentVersion = versionReader(getChangeListVersions())
     val changeList = changeListFetcher(currentVersion)
-    if (changeList.isEmpty()) return@suspendRunCaching true
+//    if (changeList.isEmpty()) {
+//        return@suspendRunCaching true
+//    }
 
-    val (deleted, updated) = changeList.partition(NetworkChangeList::isDelete)
 
-    modelDeleter(deleted.map(NetworkChangeList::id))
-    modelUpdater(updated.map(NetworkChangeList::id))
+//    val (deleted, updated) = changeList.partition(NetworkChangeList::isDelete)
+//    modelDeleter(deleted.map(NetworkChangeList::id))
+    modelDeleter()
+    modelUpdater()
 
-    val lastVersion = changeList.last().changeListVersion
-    updateChangeListVersions {
-        versionUpdater(lastVersion)
-    }
+//    val lastVersion = changeList.last().changeListVersion
+//    updateChangeListVersions {
+//        versionUpdater(lastVersion)
+//    }
 }.isSuccess

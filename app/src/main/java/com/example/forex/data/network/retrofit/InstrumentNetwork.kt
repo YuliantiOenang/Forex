@@ -72,6 +72,6 @@ class InstrumentNetwork @Inject constructor(): InstrumentDataSource {
     }
 
     override suspend fun getMarketChangeList(after: Int?): List<NetworkChangeList> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 }

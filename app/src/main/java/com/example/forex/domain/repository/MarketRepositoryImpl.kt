@@ -47,14 +47,6 @@ class MarketRepositoryImpl @Inject constructor(
                     if (dbItem == null) {
                         initialPrice = roundOffDecimal(entry.value)
                         currentPrice = initialPrice
-                        dao.insert(
-                            InstrumentEntity(
-                                entry.key,
-                                initialPrice,
-                                sell,
-                                buy
-                            )
-                        )
                     } else {
                         initialPrice = roundOffDecimal(dbItem.original_price)
                         currentPrice = if (BuildConfig.DEBUG) {
@@ -109,7 +101,7 @@ class MarketRepositoryImpl @Inject constructor(
                 dao.deleteAll()
                 instrumentSymbolDao.deleteAll()
             },
-            modelUpdater = { changeIds ->
+            modelUpdater = {  ->
                 val networkMarketListResources = networkDataSource.getInstrumentList()
                 val networkMarketResources = networkDataSource.getInstrumentLive("USD", "AUD")
                 if (networkMarketResources.quotes != null) {
@@ -129,14 +121,15 @@ class MarketRepositoryImpl @Inject constructor(
                         if (dbItem == null) {
                             initialPrice = roundOffDecimal(entry.value)
                             currentPrice = initialPrice
-                            dao.insert(
-                                InstrumentEntity(
-                                    entry.key,
-                                    initialPrice,
-                                    sell,
-                                    buy
+                                dao.insert(
+                                    InstrumentEntity(
+                                        entry.key,
+                                        initialPrice,
+                                        sell,
+                                        buy
+                                    )
                                 )
-                            )
+
                         } else {
                             initialPrice = roundOffDecimal(dbItem.original_price)
                             currentPrice = if (BuildConfig.DEBUG) {
@@ -154,7 +147,6 @@ class MarketRepositoryImpl @Inject constructor(
                             buy
                         )
                     }
-
                     instrumentSymbolDao.insertAll(networkMarketListResources.currencies?.map {
                         return@map InstrumentSymbolEntity(it.key)
                     } ?: listOf())
