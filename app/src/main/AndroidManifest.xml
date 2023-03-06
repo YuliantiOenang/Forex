@@ -38,6 +38,7 @@
                 android:name="com.example.forex.sync.initializers.SyncInitializer"
                 android:value="androidx.startup" />
         </provider>
+        <profileable android:shell="true"/>
     </application>
 
 </manifest>

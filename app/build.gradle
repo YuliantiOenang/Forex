@@ -41,6 +41,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             debuggable false
+            signingConfig signingConfigs.debug
         }
 
         mock {
@@ -151,6 +152,24 @@ dependencies {
     implementation "androidx.startup:startup-runtime:1.1.1"
     implementation 'androidx.tracing:tracing:1.2.0-alpha01'
     implementation 'androidx.tracing:tracing-ktx:1.2.0-alpha01'
+
+    implementation androidx.core
+
+    implementation androidx.appCompat
+
+    implementation material.material
+
+    implementation androidx.composeUi
+
+    implementation androidx.composeMaterial
+
+    implementation androidx.composeUiToolingPreview
+
+    implementation androidx.lifecycleRuntimeKtx
+
+    implementation androidx.composeActivity
+
+    testImplementation test.junit
 }
 
 kapt {
