@@ -58,4 +58,8 @@ dependencies {
     implementation network.retrofitMoshi
     implementation network.moshi
     implementation network.moshiKotlin
+    implementation persistence.roomRuntime
+    implementation persistence.roomKtx
+    kapt persistence.roomCompiler
+    implementation persistence.datastore
 }

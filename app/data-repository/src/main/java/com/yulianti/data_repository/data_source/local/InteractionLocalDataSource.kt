@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface InteractionLocalDataSource {
     fun getInteraction(): Flow<Interaction>
-    fun updateInteraction(interaction: Interaction): Flow<Interaction>
+    suspend fun updateInteraction(interaction: Interaction)
 }
