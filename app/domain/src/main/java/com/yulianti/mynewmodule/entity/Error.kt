@@ -1,4 +1,4 @@
-package com.example.forex.com.yulianti.mynewmodule.entity
+package com.yulianti.mynewmodule.entity
 
 sealed class Error(override val cause: Throwable?): Throwable(cause) {
     class PostException(cause: Throwable?) : Error(cause)

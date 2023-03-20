@@ -1,7 +1,7 @@
 package com.example.forex.usecase
 
 import com.example.forex.com.yulianti.mynewmodule.entity.User
-import com.example.forex.repository.UserRepository
+import repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.map
 

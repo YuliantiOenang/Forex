@@ -1,6 +1,6 @@
 package com.example.forex.usecase
 
-import com.example.forex.com.yulianti.mynewmodule.entity.Error
+import com.yulianti.mynewmodule.entity.Error
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 
